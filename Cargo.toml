@@ -1,0 +1,21 @@
+[workspace]
+members = [
+    "./crates/fees",
+]
+resolver = "2"
+
+[workspace.dependencies]
+
+
+[profile.dind]
+inherits = "dev"
+
+[profile.no-debug-assertions]
+inherits = "dev"
+debug-assertions = false
+
+[profile.release]
+lto = true
+
+[env]
+RUST_BACKTRACE = "1"
