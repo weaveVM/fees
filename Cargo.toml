@@ -1,10 +1,14 @@
 [workspace]
 members = [
+    "./crates/common",
     "./crates/fees",
 ]
 resolver = "2"
 
 [workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12.7", features = ["json"] }
+serde_json = "1.0.128"
 
 
 [profile.dind]
