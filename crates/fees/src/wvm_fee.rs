@@ -25,14 +25,14 @@ impl WvmFee {
         let ar_price_reader = self.ar_price_fetcher.current_price.read().unwrap();
         let init = ar_price_reader.init;
         if init {
-            let one_ar_in_dollars = ar_price_reader.price;
-            let one_ar_in_winston = 1000000000000;
             let base_fee_in_winston = ar_price_reader.base_price_in_winston;
+            let one_ar_in_dollars = ar_price_reader.price;
+            let one_ar_in_winston = 1000000000000i64;
 
-            // one_ar_in_dollars -> one_ar_in_winston
+            // one_ar_in_winston -> one_ar_in_dollars
             // base_fee_in_winston -> x
 
-            (base_fee_in_winston * one_ar_in_winston) as f64 / one_ar_in_dollars
+            (base_fee_in_winston as f64 * one_ar_in_dollars) / one_ar_in_winston as f64
         } else {
             0.004 // Default in case it hasn't been init
         }
@@ -109,5 +109,13 @@ mod tests {
         assert!(price_container.init);
         assert!(price_container.price > 1f64);
         assert!(price_container.base_price_in_winston > 10000);
+    }
+
+    #[tokio::test]
+    pub async fn test_ar_base_fee_usd() {
+        let wvm_fee = WvmFee::new();
+        let ar_fee = wvm_fee.arweave_base_usd_fee().await;
+        assert!(ar_fee >= 0.004);
+        assert!(ar_fee <= 0.008);
     }
 }
