@@ -60,11 +60,10 @@ impl ArPriceFetcher {
         }
     }
 
-    pub fn init(&self, cb: Option<Arc<WvmUpdatePriceCb>>) {
+    pub fn init(&self) {
         let cur_price = self.current_price.clone();
         tokio::spawn(async move {
             let cur_price = cur_price.clone();
-            let cb = cb.clone();
 
             let forever = tokio::task::spawn(async move {
                 let mut interval = tokio::time::interval(std::time::Duration::from_secs(
@@ -73,7 +72,6 @@ impl ArPriceFetcher {
 
                 loop {
                     let cur_price = cur_price.clone();
-                    let cb = cb.clone();
                     interval.tick().await;
                     let get_price = PriceContainer::fetch_price().await;
                     let base_price_per_winston =
@@ -83,9 +81,6 @@ impl ArPriceFetcher {
                         let mut data = cur_price.write().unwrap();
                         if let Some(price) = get_price {
                             data.update(price);
-                            if let Some(cb) = cb {
-                                let _ = cb(price);
-                            }
                         }
                     }
 
