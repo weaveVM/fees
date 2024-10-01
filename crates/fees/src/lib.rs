@@ -2,7 +2,7 @@ use std::fmt::{Debug, Formatter};
 use std::sync::Arc;
 
 pub mod ar_price_fetcher;
-mod util;
+pub mod util;
 pub mod wvm_fee;
 
 pub type WvmUpdatePriceCb = Box<dyn Fn(i64) -> Result<(), ()> + Send + Sync + 'static>;
