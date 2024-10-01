@@ -1,20 +1,26 @@
 use crate::ar_price_fetcher::ArPriceFetcher;
-use crate::WVM_USD_PRICE;
+use crate::{UpdatePriceCb, WvmUpdatePriceCb, WVM_USD_PRICE};
 use std::sync::Arc;
 
 pub struct WvmFee {
     ar_price_fetcher: Arc<ArPriceFetcher>,
+    cb: Option<UpdatePriceCb>,
 }
 
 impl WvmFee {
-    pub fn new() -> Self {
+    pub fn new(func: Option<WvmUpdatePriceCb>) -> Self {
         Self {
             ar_price_fetcher: Arc::new(ArPriceFetcher::new()),
+            cb: match func {
+                None => None,
+                Some(func) => Some(UpdatePriceCb { cb: Arc::new(func) }),
+            },
         }
     }
 
     pub fn init(&self) {
-        self.ar_price_fetcher.init();
+        self.ar_price_fetcher
+            .init(self.cb.as_ref().map(|i| i.cb.clone()));
     }
 
     pub async fn wvm_usd_price(&self) -> f64 {
@@ -75,7 +81,7 @@ mod tests {
 
     #[tokio::test]
     pub async fn test_wvm_base_fee() {
-        let base_fee = WvmFee::new()
+        let base_fee = WvmFee::new(None)
             .raw_calculate_wvm_base_storage_fee(0.004, 12.5)
             .await;
         assert_eq!(base_fee, 0.00032);
@@ -83,17 +89,17 @@ mod tests {
 
     #[tokio::test]
     pub async fn test_wvm_lowest_possible_gas_price() {
-        let base_fee = WvmFee::new()
+        let base_fee = WvmFee::new(None)
             .raw_calculate_wvm_base_storage_fee(0.004, 12.5)
             .await;
 
-        let lowest_possible_gas_price = WvmFee::new()
+        let lowest_possible_gas_price = WvmFee::new(None)
             .raw_calculate_lowest_possible_gas_price(base_fee, 300_000_000)
             .await;
 
         assert_eq!(lowest_possible_gas_price, 1.0666666666666667);
 
-        let lowest_possible_gas_price = WvmFee::new()
+        let lowest_possible_gas_price = WvmFee::new(None)
             .raw_calculate_lowest_possible_gas_price(base_fee, 500_000_000)
             .await;
 
@@ -102,7 +108,7 @@ mod tests {
 
     #[tokio::test]
     pub async fn test_wvm_ar_fetcher() {
-        let wvm_fee = WvmFee::new();
+        let wvm_fee = WvmFee::new(None);
         wvm_fee.init();
         tokio::time::sleep(Duration::from_secs(10)).await;
         let price_container = wvm_fee.ar_price_fetcher.current_price.read().unwrap();
@@ -113,7 +119,7 @@ mod tests {
 
     #[tokio::test]
     pub async fn test_ar_base_fee_usd() {
-        let wvm_fee = WvmFee::new();
+        let wvm_fee = WvmFee::new(None);
         let ar_fee = wvm_fee.arweave_base_usd_fee().await;
         assert!(ar_fee >= 0.004);
         assert!(ar_fee <= 0.008);
