@@ -1,0 +1,1 @@
+pub static ADDRESS_BOOK: &str = include_str!("../../../address_book.json");

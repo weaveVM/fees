@@ -1,0 +1,11 @@
+{
+  "genesis_one": "0xa2A0D977847805fE224B789D8C4d3D711ab251e7",
+  "genesis_two": "0x197f818c1313DC58b32D88078ecdfB40EA822614",
+  "alphanet_faucet": "0x89C23f56A3C5c586c870cB26a18F13dBCCf798bE",
+  "metis_wvm_archiver": "0x197f818c1313DC58b32D88078ecdfB40EA822614",
+  "rss3_wvm_archiver": "0xA6dC883ea2A6acb576A933B4d38D13d6069d9fBE",
+  "goat_wvm_archiver": "0xE5e289FC97C63f64B1EC5e061d7f176e02eBE5A0",
+  "alphanet_exex_publisher": "5JUE58yemNynRDeQDyVECKbGVCQbnX7unPrBRqCPVn5Z",
+  "devnet_exex_publisher": "8zaAhF426uPbrAyrF6UTHh5RB9Kn8dr2Vr9NrCMXnfxV",
+  "alphanet_exex_backfiller": "F8XVrMQzsHiWfn1CaKtUPxAgUkATXQjXULWw3oVXCiFV"
+}
