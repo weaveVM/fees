@@ -1,4 +1,4 @@
-use crate::WvmUpdatePriceCb;
+use crate::ar_price_fetcher_onchain::fetch_price_onchain;
 use serde_json::Value;
 use std::sync::{Arc, RwLock};
 
@@ -12,18 +12,25 @@ pub struct PriceContainer {
 
 impl PriceContainer {
     pub async fn fetch_price() -> Option<f64> {
-        let req =
-            reqwest::get("https://api.redstone.finance/prices?symbol=AR&provider=redstone&limit=1")
-                .await
-                .ok()?;
-        let json = req.json::<Value>().await.ok()?;
-        let item = json.as_array()?;
-        if !item.is_empty() {
-            let ar_item = item.get(0)?;
-            let price = ar_item.get("value")?.as_f64()?;
-            Some(price)
+        let onchain_price = fetch_price_onchain().await;
+        // first fetch redstone data price natively from Arweave
+        if let Some(price) = onchain_price {
+            return Some(price);
         } else {
-            None
+            let req = reqwest::get(
+                "https://api.redstone.finance/prices?symbol=AR&provider=redstone&limit=1",
+            )
+            .await
+            .ok()?;
+            let json = req.json::<Value>().await.ok()?;
+            let item = json.as_array()?;
+            if !item.is_empty() {
+                let ar_item = item.get(0)?;
+                let price = ar_item.get("value")?.as_f64()?;
+                Some(price)
+            } else {
+                None
+            }
         }
     }
 
