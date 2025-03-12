@@ -96,7 +96,9 @@ impl WvmFee {
 
 #[cfg(test)]
 mod tests {
-    use crate::util::{raw_calculate_lowest_possible_gas_price, raw_calculate_wvm_base_storage_fee};
+    use crate::util::{
+        raw_calculate_lowest_possible_gas_price, raw_calculate_wvm_base_storage_fee,
+    };
     use crate::wvm_fee::{WvmFee, WvmFeeManager};
     use std::sync::atomic::{AtomicI64, Ordering};
     use std::sync::{Arc, RwLock};
@@ -112,11 +114,13 @@ mod tests {
     pub async fn test_wvm_lowest_possible_gas_price() {
         let base_fee = raw_calculate_wvm_base_storage_fee(0.004, 12.5);
 
-        let lowest_possible_gas_price = raw_calculate_lowest_possible_gas_price(base_fee, 300_000_000);
+        let lowest_possible_gas_price =
+            raw_calculate_lowest_possible_gas_price(base_fee, 300_000_000);
 
         assert_eq!(lowest_possible_gas_price, 1.0666666666666667);
 
-        let lowest_possible_gas_price = raw_calculate_lowest_possible_gas_price(base_fee, 500_000_000);
+        let lowest_possible_gas_price =
+            raw_calculate_lowest_possible_gas_price(base_fee, 500_000_000);
 
         assert_eq!(lowest_possible_gas_price, 0.64);
     }
